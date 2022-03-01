@@ -16,6 +16,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 
+
 #from django.urls import reverse
 
 
@@ -64,7 +65,7 @@ ROOT_URLCONF = 'bookmarks.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [str(BASE_DIR.joinpath('templates'))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,3 +150,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #LOGIN_REDIRECT_URL = reverse('dashboard')
 #LOGIN_URL = reverse('login')
 #LOGOUT_URL = reverse('logout')
+
+LOGIN_REDIRECT_URL = '/account/'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'prabhatwebcrone@gmail.com'
+EMAIL_HOST_PASSWORD = 'Prabhat@123'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
