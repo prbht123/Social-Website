@@ -32,4 +32,5 @@ urlpatterns = [
 
 
     path('edit/', views.edit, name='edit'),
+    
 ]

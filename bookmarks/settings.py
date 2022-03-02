@@ -23,7 +23,8 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+#ALLOWED_HOSTS = ['*']
+#ALLOWED_HOSTS = []
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,7 +36,7 @@ SECRET_KEY = 'django-insecure-b2-3my&u*^ii=h3fosbt)=uaxrvcjl4s!48m=412ul^nihc12&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mysite.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -48,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'account',
+    'social_django',
+    'images',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'bookmarks.urls'
@@ -73,6 +77,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -160,4 +166,20 @@ EMAIL_HOST_USER = 'prabhatwebcrone@gmail.com'
 EMAIL_HOST_PASSWORD = 'Prabhat@123'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+AUTHENTICATION_BACKENDS = (
+'django.contrib.auth.backends.ModelBackend',
+'account.authentication.EmailAuthBackend',
+#'social_auth.backends.facebook.FacebookBackend',
+'social_core.backends.facebook.FacebookOAuth2',
+'social.backends.twitter.TwitterOAuth',
+)
+
+
+SOCIAL_AUTH_FACEBOOK_KEY = '637630670837500' # Facebook App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = '49e12b92ca1d6ba7aa34c4ca528114b8' # Facebook App Secret
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+SOCIAL_AUTH_TWITTER_KEY = 'hnpR3oD5ns1ozE3K2HzJ86vxn' # Twitter Consumer Key
+SOCIAL_AUTH_TWITTER_SECRET = 'XpM0XGn2zroXUITBitcOZJOnzv34uDXcbLsf6neTNeSVTxnB89' # Twitter Consumer Secret
 

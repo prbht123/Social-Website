@@ -8,6 +8,8 @@ from .forms import LoginForm
 from .models import Profile
 from django.contrib.auth.decorators import login_required
 
+from django.contrib import messages
+
 from .forms import LoginForm, UserRegistrationForm,UserEditForm, ProfileEditForm
 
 def user_login(request):
@@ -68,6 +70,9 @@ def edit(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
+            messages.success(request, 'Profile updated successfully')
+        else:
+            messages.error(request, 'Error updating your profile')
     else:
         print("00000000")
         user_form = UserEditForm(instance=request.user)

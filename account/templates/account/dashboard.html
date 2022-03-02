@@ -1,6 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
+
 <h1>Dashboard</h1>
-<p>Welcome to your dashboard.</p>
+<p>Welcome to your dashboard. You can <a href="{% url 'edit' %}">edit
+    your profile</a> or <a href="{% url 'password_change' %}">change your
+    password</a>.</p>
+
+
+    {% with total_images_created=request.user.images_created.count %}
+<p>Welcome to your dashboard. You have bookmarked {{ total_images_created }} image{{ total_images_created|pluralize }}.</p>
+{% endwith %}
+{% load static %}
+<p>Drag the following button to your bookmarks toolbar to bookmark
+images from other websites → 
+<a href="javascript:(function(){
+    if (window.myBookmarklet !== undefined){
+    myBookmarklet();
+    }
+    else {
+        document.body.appendChild(document.createElement('script')).src='http://127.0.0.1:8000/static/js/bookmarklet.js?r='+Math.floor(Math.random()*99999999999999999999);
+        }
+})();" class="button">Bookmark it</a><p>
+
+
+
+    <p>You can also <a href="{% url 'edit' %}">edit your profile</a> or
+<a href="{% url 'password_change' %}">change your password</a>.<p>
 {% endblock %}
