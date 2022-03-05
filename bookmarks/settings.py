@@ -17,7 +17,7 @@ from pathlib import Path
 import os
 
 
-#from django.urls import reverse
+from django.urls import reverse
 
 
 
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'social_django',
     'images',
     'sorl.thumbnail',
+    'actions',
 ]
 
 MIDDLEWARE = [
@@ -186,3 +187,6 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 SOCIAL_AUTH_TWITTER_KEY = 'hnpR3oD5ns1ozE3K2HzJ86vxn' # Twitter Consumer Key
 SOCIAL_AUTH_TWITTER_SECRET = 'XpM0XGn2zroXUITBitcOZJOnzv34uDXcbLsf6neTNeSVTxnB89' # Twitter Consumer Secret
 
+ABSOLUTE_URL_OVERRIDES = {
+'auth.user': lambda u: reverse('user_detail',args=[u.username])
+}

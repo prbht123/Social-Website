@@ -16,6 +16,8 @@ from common.decorators import ajax_required
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage,PageNotAnInteger
 
+from actions.utils import create_action
+
 
 @login_required
 def image_create(request):
@@ -33,6 +35,7 @@ def image_create(request):
             # assign current user to the item
             new_item.user = request.user
             new_item.save()
+ #           create_action(request.user, 'bookmarked image', new_item)
             messages.success(request, 'Image added successfully')
             # redirect to new created item detail view
             return redirect(new_item.get_absolute_url())
@@ -53,17 +56,24 @@ def image_detail(request, id, slug):
     return render(request,'images/image/detail.html',{'section': 'images','image': image})
 
 
-@ajax_required
+ajax_required
 @login_required
 @require_POST
 def image_like(request):
     image_id = request.POST.get('id')
     action = request.POST.get('action')
+    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
     if image_id and action:
         try:
             image = Image.objects.get(id=image_id)
+            print(image)
+            print("00000000000000000000")
             if action == 'like':
                 image.users_like.add(request.user)
+                print("111111111111111111111111111")
+                print(image.users)
+                create_action(request.user, 'likes', image)
+                print("2222222222222222222222")
             else:
                 image.users_like.remove(request.user)
             return JsonResponse({'status':'ok'})
@@ -72,7 +82,24 @@ def image_like(request):
     return JsonResponse({'status':'ko'}) 
 
 
-
-
-
-
+#@ajax_required
+@login_required
+def image_list(request):
+    images = Image.objects.all()
+    paginator = Paginator(images, 8)
+    page = request.GET.get('page')
+    try:
+        images = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer deliver the first page
+        images = paginator.page(1)
+    except EmptyPage:
+        if request.is_ajax():
+            # If the request is AJAX and the page is out of range
+            # return an empty page
+            return HttpResponse('')
+        # If page is out of range deliver last page of results
+        images = paginator.page(paginator.num_pages)
+    #if request.is_ajax():
+     #   return render(request,'images/image/list_ajax.html',{'section': 'images', 'images': images})
+    return render(request,'images/image/list.html',{'section': 'images', 'images': images})

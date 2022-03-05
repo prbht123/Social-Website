@@ -25,7 +25,7 @@
             <a class = "nav-link" href="#" style="color: aliceblue;">Images</a>
             </li>
             <li {% if section == "people" %}class="selected nav-item"{% endif %}>
-            <a class = "nav-link" href="#" style="color: aliceblue;" >People</a>
+            <a class = "nav-link" href="{% url 'user_list' %}" style="color: aliceblue;" >People</a>
             </li>
 
             <li {% if section == "password" %}class="selected nav-item"{% endif %}>
@@ -80,9 +80,10 @@
         });
 
         $(document).ready(function(){
-            console.log("000000000000000")
+            
+            console.log("000000000000000") 
+              
 		});
-       
     </script>
 
 </body>

@@ -12,6 +12,17 @@ from django.contrib import messages
 
 from .forms import LoginForm, UserRegistrationForm,UserEditForm, ProfileEditForm
 
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from common.decorators import ajax_required
+from .models import Contact
+from actions.utils import create_action
+from actions.models import Action
+
 def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -36,7 +47,14 @@ def user_login(request):
 @login_required
 def dashboard(request):
     print("hello")
-    return render(request,'account/dashboard.html',{'section': 'dashboard'})
+    # Display all actions by default
+    actions = Action.objects.exclude(user=request.user)
+    following_ids = request.user.following.values_list('id',flat=True)
+    if following_ids:
+        # If user is following others, retrieve only their actions
+        actions = actions.filter(user_id__in=following_ids).select_related('user', 'user__profile').prefetch_related('target')
+    actions = actions[:10]
+    return render(request,'account/dashboard.html',{'section': 'dashboard','actions': actions})
 
 
 def register(request):
@@ -51,6 +69,7 @@ def register(request):
             # Save the User object
             new_user.save()
             profile = Profile.objects.create(user=new_user)
+            create_action(new_user, 'has created an account')
 
         return render(request,'register_done.html',{'new_user': new_user})
     else:
@@ -82,3 +101,48 @@ def edit(request):
         print(profile_form)
         
     return render(request,'account/edit.html',{'user_form': user_form,'profile_form': profile_form})
+
+
+
+@login_required
+def user_list(request):
+    users = User.objects.filter(is_active=True)
+    return render(request,'account/user/list.html',{'section': 'people','users': users})
+
+
+@login_required
+def user_detail(request, username):
+    user = get_object_or_404(User,username=username,is_active=True)
+    return render(request,'account/user/detail.html', {'section': 'people','user': user})
+
+
+
+@ajax_required
+@require_POST
+@login_required
+def user_follow(request):
+    print("rrrrrrrrrrrrrrrrrrrrrrrrrr")
+    user_id = request.POST.get('id')
+    print(user_id)
+    action = request.POST.get('action')
+    print(action)
+    if user_id and action:
+        print("aaaaaaaaaaaaaaaaaa")
+        try:
+            user = User.objects.get(id=user_id)
+            if action == 'follow':
+                print("oooooooooooooooo")
+                data=Contact.objects.get_or_create(user_from=request.user,user_to=user)
+                create_action(request.user, 'is following', user)
+                print(data)
+            else:
+                print("kkkkkkkkkkkkkkkkkkkkk")
+                data=Contact.objects.filter(user_from=request.user,user_to=user).delete()
+                print(data)
+            return JsonResponse({'status':'ok'})
+        except User.DoesNotExist:
+            return JsonResponse({'status':'ko'})
+    return JsonResponse({'status':'ko'})
+
+
+
