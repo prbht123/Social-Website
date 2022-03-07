@@ -22,7 +22,7 @@
             <a class = "nav-link" href="{% url 'dashboard' %} " style="color: aliceblue;">My dashboard</a>
             </li>
             <li {% if section == "images" %}class="selected nav-item"{% endif %}>
-            <a class = "nav-link" href="#" style="color: aliceblue;">Images</a>
+            <a class = "nav-link" href="{% url 'images:list' %}" style="color: aliceblue;">Images</a>
             </li>
             <li {% if section == "people" %}class="selected nav-item"{% endif %}>
             <a class = "nav-link" href="{% url 'user_list' %}" style="color: aliceblue;" >People</a>
@@ -65,6 +65,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
     <script>
+        
         var csrftoken = $.cookie('csrftoken');
         console.log(csrftoken)
         function csrfSafeMethod(method) {
@@ -77,14 +78,14 @@
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
                 }
             }
-        });
-
-        $(document).ready(function(){
             
-            console.log("000000000000000") 
-              
-		});
+        });
     </script>
+    {% block domready %}
+    {% endblock %}
+
+        
+    
 
 </body>
 </html>

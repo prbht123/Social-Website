@@ -12,6 +12,6 @@ class Action(models.Model):
     target_ct = models.ForeignKey(ContentType,blank=True,null=True,related_name='target_obj',on_delete=models.CASCADE)
     target_id = models.PositiveIntegerField(null=True,blank=True,db_index=True)
     target = GenericForeignKey('target_ct', 'target_id')
-    created = models.DateTimeField(auto_now_add=True,db_index=True)
+    created = models.DateTimeField(auto_now=True,db_index=True)
     class Meta:
         ordering = ('-created',)

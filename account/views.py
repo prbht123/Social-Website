@@ -22,6 +22,7 @@ from common.decorators import ajax_required
 from .models import Contact
 from actions.utils import create_action
 from actions.models import Action
+from django.views.decorators.csrf import csrf_exempt
 
 def user_login(request):
     if request.method == 'POST':
@@ -46,9 +47,8 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
-    print("hello")
     # Display all actions by default
-    actions = Action.objects.exclude(user=request.user)
+    actions = Action.objects.filter(user=request.user)
     following_ids = request.user.following.values_list('id',flat=True)
     if following_ids:
         # If user is following others, retrieve only their actions
@@ -60,7 +60,6 @@ def dashboard(request):
 def register(request):
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
-        print("00000000000",user_form)
         if user_form.is_valid():
         # Create a new user object but avoid saving it yet
             new_user = user_form.save(commit=False)
@@ -82,7 +81,6 @@ def register(request):
 @login_required
 def edit(request):
     if request.method == 'POST':
-        print("000000000000")
         user_form = UserEditForm(instance=request.user,
         data=request.POST)
         profile_form = ProfileEditForm(instance=request.user.profile,data=request.POST,files=request.FILES)
@@ -93,12 +91,8 @@ def edit(request):
         else:
             messages.error(request, 'Error updating your profile')
     else:
-        print("00000000")
         user_form = UserEditForm(instance=request.user)
-        print("llllllllllllllll")
         profile_form = ProfileEditForm(instance=request.user.profile)
-        print("999999999999999")
-        print(profile_form)
         
     return render(request,'account/edit.html',{'user_form': user_form,'profile_form': profile_form})
 
@@ -117,32 +111,31 @@ def user_detail(request, username):
 
 
 
+
 @ajax_required
-@require_POST
 @login_required
+@require_POST
 def user_follow(request):
-    print("rrrrrrrrrrrrrrrrrrrrrrrrrr")
     user_id = request.POST.get('id')
     print(user_id)
     action = request.POST.get('action')
     print(action)
     if user_id and action:
-        print("aaaaaaaaaaaaaaaaaa")
         try:
             user = User.objects.get(id=user_id)
             if action == 'follow':
-                print("oooooooooooooooo")
                 data=Contact.objects.get_or_create(user_from=request.user,user_to=user)
                 create_action(request.user, 'is following', user)
-                print(data)
             else:
-                print("kkkkkkkkkkkkkkkkkkkkk")
                 data=Contact.objects.filter(user_from=request.user,user_to=user).delete()
                 print(data)
             return JsonResponse({'status':'ok'})
         except User.DoesNotExist:
             return JsonResponse({'status':'ko'})
     return JsonResponse({'status':'ko'})
+
+
+
 
 
 
